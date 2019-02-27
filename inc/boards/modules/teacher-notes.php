@@ -1,45 +1,64 @@
 <div class="card">
     <div class="card-content">
         <div class="card-body">
-            <h4 class="card-title">Vos dernières notes</h4>
-            <p>Choose your matière: </p>
-            <?php
-                // Préparer une requête SQL qui récupére les matières
-
-                // Lancer la requête
-                // Ouvrir un echo de la balise "<select>"
-                //Lancer la boucle while
-                //Echo des balises <option> (ne pas oublier les attributs value)
-                //Fermeture de la balise
-             $matiere_req = "SELECT * FROM matieres_profs LEFT JOIN matieres ON matieres.id = matieres_profs.matieres_profs_matieres_id WHERE matieres_profs.matieres_profs_users_id = '".$prof_id."' ";
-            if($resultat = $mysqli->query($matiere_req)){
-                echo '<select id="matieres-select" onchange="displayNotes(this.value, false)">';
-                while( $res = $resultat->fetch_object()){
-                    echo '<option value="'.$res->id.'">'.$res->matieres_name.'</option>';
-                }
-                echo '</select>';
-            }
-            ?>
+            <h4 class="card-title">Vos dernières notes</h4> 
         </div>
-        <ul  id="notes-display"  class="list-group list-group-flush">
-            <!-- <li class="list-group-item"> -->
-        </ul> 
-
-      <!--   $matiere_req = "SELECT * FROM matieres_profs LEFT JOIN matieres ON matieres.id = matieres_profs.matieres_profs_matieres_id WHERE matieres_profs.matieres_profs_users_id = '".$prof_id."' ";
-       
-        if($resultat = $mysqli->query($matiere_req)){
-             while( $res = $resultat->fetch_object()){
-            echo '<h4>'.$res->matieres_name.'</h4>';
-            $matiere_id = $res->matieres_profs_matieres_id;
-                $matiere_req = "SELECT * FROM notes LEFT JOIN users ON users.id = notes.note_user_id WHERE note_matiere_id = '".$matiere_id."' ";
-                if($resultat = $mysqli->query($matiere_req) ){
-    
-    ?> -->
-    
-<?php
-
-
-?>
+        <?php
+            $matiere_req = "SELECT * FROM matieres_profs LEFT JOIN matieres ON matieres.id = matieres_profs.matieres_profs_matieres_id WHERE matieres_profs.matieres_profs_users_id = '".$prof_id."' ";
+            if($resultat = $mysqli->query($matiere_req)){
+               while( $res = $resultat->fetch_object()){
+                 echo '<h2>'.$res->matieres_name.'</h2>'; 
+                    $notes_req = "SELECT * FROM users LEFT JOIN notes ON notes.note_user_id = users.id WHERE note_matiere_id = ' ".$res->matieres_profs_matieres_id." '   ";
+                    if($notes_res = $mysqli->query($notes_req)){
+                        ?>
+                        <table class="table">
+                        <thead>
+                            <tr>
+                                <td>Nom</td>
+                                <td>Prénom</td>
+                                <td>Note</td>
+                                <td>Commentaire</td>
+                            </tr>
+                        </thead>
+                        <?php
+                        while($res2 = $notes_res->fetch_object()){
+                            ?>
+                            <tr>
+                                <td><?php echo $res2->users_name; ?></td>
+                                <td><?php echo $res2->users_surname; ?></td>
+                                <td><?php echo $res2->note_note; ?></td>
+                                <td><?php echo $res2->note_commentaire; ?></td>
+                                <td><i data-toggle="modal" data-target="#m_modal_<?php echo $res2->id; ?>" class="fa fa-edit"></i></td>
+                            </tr>
+                            <div class="modal fade" id="m_modal_<?php echo $res2->id; ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel"><?php echo $res2->users_name.' '.$res2->users_surname; ?></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <div contentEditable="true" class="note"><?php echo $res2->note_note; ?></div>
+                                    <div contentEditable="true" class="commentaire"><?php echo $res2->note_commentaire; ?></div>
+                                   </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" onclick="updateNote(<?php echo $res2->id; ?>);" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php
+                        }
+                        ?>
+                    </table>
+                    <?php
+                    }
+                }
+            }
+        ?>
     </div>
 </div>
 </div>

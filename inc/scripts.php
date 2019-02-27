@@ -63,6 +63,47 @@
 <script src="assets/js/scripts.bundle.js" type="text/javascript"></script>
 <script type="text/javascript">
 
+
+function updateNote(i){
+   var note = $('#m_modal_'+i+' .note').html();
+   var commentaire = $('#m_modal_'+i+' .commentaire').html();
+   // récupérer la note dans la BONNE modal
+   //récupérer le commentaire
+   console.log('note: '+note+' commentaire: '+commentaire);
+
+   // les passer dans une requête AJAX en POST vers inc/ajax/update-note.php     
+     $.ajax({
+        url : 'inc/ajax/update-note.php',
+        type : 'POST', // Le type de la requête HTTP, ici devenu POST
+        data : 'note=' + note + '&commentaire=' + commentaire + '&id='+i, // On fait passer nos variables, exactement comme en GET, au script more_com.php
+        dataType : 'html',
+        success: function(response){
+            console.log(response);
+        },
+        error: function(){
+            console.log('Erreur');
+        }
+     });
+
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   // $('#m_modal_'+i).modal('toggle');
+}
+
+
+
+
+
+
 $(".edit").focusout(function(){
 	$(this).removeClass("edit");
 	var id = this.id;
